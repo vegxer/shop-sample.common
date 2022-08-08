@@ -1,0 +1,29 @@
+version: '3.5'
+services:
+  activemq:
+    image: vromero/activemq-artemis:2.16.0-alpine
+    restart: always
+    env_file: .env
+    ports:
+      - "8161:8161"
+      - "61616:61616"
+      - "5672:5672"
+    volumes:
+      - activemq_data:/data/activemq
+      - activemq_log:/var/log/activemq
+    networks:
+      - shop-sample-artemis
+    healthcheck:
+      test: "netstat | grep 61616 || exit 1"
+      interval: 20s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+networks:
+  shop-sample-artemis:
+    name: shop-sample-lan
+    external: true
+    driver: bridge
+volumes:
+  activemq_data: { }
+  activemq_log: { }
